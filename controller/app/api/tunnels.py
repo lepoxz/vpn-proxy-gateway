@@ -104,7 +104,9 @@ def delete_tunnel(tunnel_id: int, state: AppState = Depends(get_state)):
 
 
 def _action(name: str):
-    def handler(tunnel_id: int, state: AppState = Depends(get_state), session: Session = Depends(get_session)):
+    def handler(
+        tunnel_id: int, state: AppState = Depends(get_state), session: Session = Depends(get_session)
+    ):
         try:
             getattr(state.manager, name)(tunnel_id)
         except TunnelError as exc:
@@ -127,7 +129,9 @@ for _name, _doc in (
 
 
 @router.post("/{tunnel_id}/check", response_model=TunnelOut)
-def check_tunnel(tunnel_id: int, state: AppState = Depends(get_state), session: Session = Depends(get_session)):
+def check_tunnel(
+    tunnel_id: int, state: AppState = Depends(get_state), session: Session = Depends(get_session)
+):
     """Run a health check immediately."""
     _get(session, tunnel_id)
     state.health.check_tunnel(tunnel_id)
@@ -169,9 +173,7 @@ def tunnel_traffic(
 
 
 @router.get("/{tunnel_id}/logs", response_class=PlainTextResponse)
-def tunnel_logs(
-    tunnel_id: int, tail: int = Query(200, ge=10, le=2000), state: AppState = Depends(get_state)
-):
+def tunnel_logs(tunnel_id: int, tail: int = Query(200, ge=10, le=2000), state: AppState = Depends(get_state)):
     try:
         return state.manager.logs(tunnel_id, tail)
     except TunnelError as exc:

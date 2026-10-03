@@ -115,9 +115,7 @@ class HealthChecker:
 
     def check_all(self) -> None:
         with session_scope() as session:
-            ids = [
-                t.id for t in session.exec(select(Tunnel)).all() if t.status not in SKIP_STATUSES
-            ]
+            ids = [t.id for t in session.exec(select(Tunnel)).all() if t.status not in SKIP_STATUSES]
         if not ids:
             return
         _ = self.real_ip  # refresh once, before fanning out

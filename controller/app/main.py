@@ -1,11 +1,12 @@
 """FastAPI application entry point."""
 
-from contextlib import asynccontextmanager
 import logging
+from contextlib import asynccontextmanager
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from pathlib import Path
 
 from app.api import accounts, auth, misc, tunnels
 from app.config import get_settings
@@ -91,6 +92,7 @@ def create_app() -> FastAPI:
             if index_file.exists():
                 return FileResponse(index_file)
             from fastapi.responses import RedirectResponse
+
             return RedirectResponse(url="/docs")
 
         @app.get("/{full_path:path}")
@@ -102,6 +104,7 @@ def create_app() -> FastAPI:
             if index_file.exists():
                 return FileResponse(index_file)
             from fastapi import HTTPException
+
             raise HTTPException(status_code=404, detail="Not Found")
 
     return app

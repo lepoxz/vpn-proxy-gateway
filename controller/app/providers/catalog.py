@@ -46,9 +46,15 @@ class GluetunServerCatalog:
                 try:
                     resp = self.http.get(url, timeout=60, follow_redirects=True)
                     resp.raise_for_status()
-                    path.parent.mkdir(parents=True, exist_ok=True)
-                    path.write_bytes(resp.content)
-                except (httpx.HTTPError, OSError) as exc:
+                    servers = resp.json().get("servers", [])
+                    self._mem[provider] = (now, servers)
+                    try:
+                        path.parent.mkdir(parents=True, exist_ok=True)
+                        path.write_bytes(resp.content)
+                    except OSError:
+                        pass
+                    return servers
+                except (httpx.HTTPError, ValueError) as exc:
                     log.warning("Could not refresh server list for %s: %s", provider, exc)
 
             if not path.exists():

@@ -26,9 +26,7 @@ class Notifier:
         if not self.enabled:
             return
         # Fire-and-forget so a slow webhook never blocks health checks.
-        threading.Thread(
-            target=self._send, args=(level, kind, message, tunnel_id), daemon=True
-        ).start()
+        threading.Thread(target=self._send, args=(level, kind, message, tunnel_id), daemon=True).start()
 
     def _send(self, level: str, kind: str, message: str, tunnel_id: int | None) -> None:
         s = self.settings
