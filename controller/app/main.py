@@ -79,7 +79,30 @@ def create_app() -> FastAPI:
 
     static_dir = Path(__file__).parent / "static"
     if static_dir.exists():
-        app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+        assets_dir = static_dir / "assets"
+        if assets_dir.exists():
+            app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
+
+        from fastapi.responses import FileResponse
+
+        @app.get("/")
+        async def index():
+            index_file = static_dir / "index.html"
+            if index_file.exists():
+                return FileResponse(index_file)
+            from fastapi.responses import RedirectResponse
+            return RedirectResponse(url="/docs")
+
+        @app.get("/{full_path:path}")
+        async def catch_all(full_path: str):
+            file_path = static_dir / full_path
+            if file_path.is_file():
+                return FileResponse(file_path)
+            index_file = static_dir / "index.html"
+            if index_file.exists():
+                return FileResponse(index_file)
+            from fastapi import HTTPException
+            raise HTTPException(status_code=404, detail="Not Found")
 
     return app
 
