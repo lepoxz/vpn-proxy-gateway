@@ -16,7 +16,10 @@ def init_engine(database_url: str) -> Engine:
     if database_url.startswith("sqlite:///"):
         path = database_url.removeprefix("sqlite:///")
         if path and path != ":memory:":
-            Path(path).parent.mkdir(parents=True, exist_ok=True)
+            try:
+                Path(path).parent.mkdir(parents=True, exist_ok=True)
+            except OSError:
+                pass
     connect_args = {"check_same_thread": False} if database_url.startswith("sqlite") else {}
     kwargs: dict = {"connect_args": connect_args}
     if database_url in ("sqlite://", "sqlite:///:memory:"):

@@ -40,10 +40,12 @@ class Jobs:
 
     def start(self) -> None:
         s = self.settings
-        self.scheduler.add_job(self.health.check_all, IntervalTrigger(seconds=s.health_interval_seconds),
-                               id="health")
-        self.scheduler.add_job(self.traffic.collect, IntervalTrigger(seconds=s.traffic_interval_seconds),
-                               id="traffic")
+        self.scheduler.add_job(
+            self.health.check_all, IntervalTrigger(seconds=s.health_interval_seconds), id="health"
+        )
+        self.scheduler.add_job(
+            self.traffic.collect, IntervalTrigger(seconds=s.traffic_interval_seconds), id="traffic"
+        )
         self.scheduler.add_job(self.traffic.cleanup, CronTrigger(hour=3, minute=17), id="cleanup")
         with session_scope() as session:
             for t in session.exec(select(Tunnel)).all():

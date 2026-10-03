@@ -55,8 +55,10 @@ def overview(state: AppState = Depends(get_state), session: Session = Depends(ge
     tunnels = session.exec(select(Tunnel)).all()
     since = utcnow() - timedelta(hours=24)
     rx, tx = session.exec(
-        select(func.coalesce(func.sum(TrafficSample.rx_bytes), 0), func.coalesce(func.sum(TrafficSample.tx_bytes), 0))
-        .where(TrafficSample.ts >= since)
+        select(
+            func.coalesce(func.sum(TrafficSample.rx_bytes), 0),
+            func.coalesce(func.sum(TrafficSample.tx_bytes), 0),
+        ).where(TrafficSample.ts >= since)
     ).one()
     accounts = []
     for a in session.exec(select(Account).order_by(Account.id)).all():

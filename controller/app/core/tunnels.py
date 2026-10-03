@@ -265,9 +265,13 @@ class TunnelManager:
             if policy is not None:
                 tunnel.rotation_mode = policy.rotation_mode
                 tunnel.rotation_interval_minutes = (
-                    policy.rotation_interval_minutes if policy.rotation_mode == RotationMode.INTERVAL else None
+                    policy.rotation_interval_minutes
+                    if policy.rotation_mode == RotationMode.INTERVAL
+                    else None
                 )
-                tunnel.rotation_cron = policy.rotation_cron if policy.rotation_mode == RotationMode.CRON else None
+                tunnel.rotation_cron = (
+                    policy.rotation_cron if policy.rotation_mode == RotationMode.CRON else None
+                )
             session.add(tunnel)
             session.commit()
         self._notify_policy(tunnel_id)
