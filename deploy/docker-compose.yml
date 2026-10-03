@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  controller:
+    build:
+      context: ../controller
+      dockerfile: Dockerfile
+    container_name: vpg-controller
+    restart: unless-stopped
+    ports:
+      - "${VPG_CONTROLLER_PORT:-8000}:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - vpg-data:/data
+    env_file:
+      - .env
+    networks:
+      - vpg-tunnels
+
+networks:
+  vpg-tunnels:
+    name: vpg-tunnels
+    driver: bridge
+
+volumes:
+  vpg-data:
